@@ -1,21 +1,20 @@
-import React from 'react';
-import Container from '@material-ui/core/Container';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import MuiLink from '@material-ui/core/Link';
-import ProTip from '../src/ProTip';
-import Link from '../src/Link';
+import React from "react";
+import Container from "@material-ui/core/Container";
+import Typography from "@material-ui/core/Typography";
+import Box from "@material-ui/core/Box";
+import MuiLink from "@material-ui/core/Link";
+import ProTip from "../src/ProTip";
+import Link from "../src/Link";
 
-function Copyright() {
+import { FirebaseContext } from "../src/components/Firebase";
+
+function Hot() {
   return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <MuiLink color="inherit" href="https://material-ui.com/">
-        Your Website
-      </MuiLink>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
+    <FirebaseContext.Consumer>
+      {firebase => {
+        return <div>I've access to Firebase and render something.</div>;
+      }}
+    </FirebaseContext.Consumer>
   );
 }
 
@@ -30,7 +29,7 @@ export default function Index() {
           Go to the about page
         </Link>
         <ProTip />
-        <Copyright />
+        <Hot />
       </Box>
     </Container>
   );
