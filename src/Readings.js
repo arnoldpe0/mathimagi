@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
 import { withFirebase } from './components/Firebase';
 
 import List from '@material-ui/core/List';
@@ -10,7 +9,42 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Avatar from '@material-ui/core/Avatar';
 import ChangeHistoryIcon from '@material-ui/icons/ChangeHistory';
 
+import { Sunburst } from 'react-vis';
+import Container from "@material-ui/core/Container";
+import Typography from "@material-ui/core/Typography";
+import Box from "@material-ui/core/Box";
 
+const data = {
+  "title": "analytics",
+  "color": "#12939A",
+  "children": [
+    {
+      "title": "cluster",
+      "children": [
+        { "title": "AgglomerativeCluster", "color": "#12939A", "size": 3938 },
+        { "title": "CommunityStructure", "color": "#12939A", "size": 3812 },
+        { "title": "HierarchicalCluster", "color": "#12939A", "size": 6714 },
+        { "title": "MergeEdge", "color": "#12939A", "size": 743 }
+      ]
+    },
+    {
+      "title": "graph",
+      "children": [
+        { "title": "BetweennessCentrality", "color": "#12939A", "size": 3534 },
+        { "title": "LinkDistance", "color": "#12939A", "size": 5731 },
+        { "title": "MaxFlowMinCut", "color": "#12939A", "size": 7840 },
+        { "title": "ShortestPaths", "color": "#12939A", "size": 5914 },
+        { "title": "SpanningTree", "color": "#12939A", "size": 3416 }
+      ]
+    },
+    {
+      "title": "optimization",
+      "children": [
+        { "title": "AspectRatioBanker", "color": "#12939A", "size": 7074 }
+      ]
+    }
+  ]
+}
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -19,6 +53,7 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.background.paper,
   },
 }));
+
 
 class Readings extends Component {
   constructor(props) {
@@ -66,18 +101,33 @@ class Readings extends Component {
 const ReadingList = ({ readings }) => {
   const classes = useStyles();
   return (
-    <List className={classes.root}>
-      {readings.map(reading => (
-        <ListItem key={reading.uid}>
-          <ListItemAvatar>
-            <Avatar>
-              <ChangeHistoryIcon />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText primary="ID:" secondary={reading.uid} />
-        </ListItem>
-      ))}
-    </List>
+    <Container maxWidth="sm">
+      <Box my={4}>
+        <Sunburst
+          hideRootNode
+          colorType="literal"
+          data={data}
+          height={300}
+          width={350} />
+
+      </Box>
+      <Box my={4}>
+        <List className={classes.root}>
+          {readings.map(reading => (
+            <ListItem key={reading.uid}>
+              <ListItemAvatar>
+                <Avatar>
+                  <ChangeHistoryIcon />
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText primary="ID:" secondary={reading.uid} />
+            </ListItem>
+          ))}
+        </List>
+      </Box>
+
+    </Container>
+
   )
 }
 
