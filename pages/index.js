@@ -1,6 +1,5 @@
 import React from "react";
 import Container from "@material-ui/core/Container";
-import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import Readings from "../src/Readings";
 
@@ -8,12 +7,7 @@ import Readings from "../src/Readings";
 export default function Index() {
 
   return (
-    <Container maxWidth="sm">
-      <Box my={4}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Mathi Magi
-        </Typography>
-      </Box>
+    <Container maxWidth="md">
       <Box my={4}><Readings /></Box>
     </Container>
   );

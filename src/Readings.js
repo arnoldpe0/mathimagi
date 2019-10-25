@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import { withFirebase } from './components/Firebase';
 
 import List from '@material-ui/core/List';
@@ -13,6 +12,10 @@ import { Sunburst } from 'react-vis';
 import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
+
+import { makeStyles } from '@material-ui/core/styles';
+import MaterialTable from 'material-table'
+
 
 const data = {
   "title": "analytics",
@@ -48,9 +51,6 @@ const data = {
 
 const useStyles = makeStyles(theme => ({
   root: {
-    width: '100%',
-    maxWidth: 360,
-    backgroundColor: theme.palette.background.paper,
   },
 }));
 
@@ -101,7 +101,24 @@ class Readings extends Component {
 const ReadingList = ({ readings }) => {
   const classes = useStyles();
   return (
-    <Container maxWidth="sm">
+    <React.Fragment>
+      <Box my={4}>
+        <div style={{ maxWidth: '100%' }}>
+          <MaterialTable
+            columns={[
+              { title: 'Temp', field: 'temperature', type: 'numeric' },
+              { title: 'RH', field: 'humidity', type: 'numeric' },
+              { title: 'Pressure', field: 'pressure', type: 'numeric' },
+              { title: 'Light', field: 'ambient_light', type: 'numeric' },
+              { title: 'UID', field: 'uid' },
+            ]}
+            data={readings}
+            title="Elemental Confuzorb"
+          />
+          {console.log(readings)}
+        </div>
+
+      </Box>
       <Box my={4}>
         <Sunburst
           hideRootNode
@@ -111,22 +128,8 @@ const ReadingList = ({ readings }) => {
           width={350} />
 
       </Box>
-      <Box my={4}>
-        <List className={classes.root}>
-          {readings.map(reading => (
-            <ListItem key={reading.uid}>
-              <ListItemAvatar>
-                <Avatar>
-                  <ChangeHistoryIcon />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText primary="ID:" secondary={reading.uid} />
-            </ListItem>
-          ))}
-        </List>
-      </Box>
 
-    </Container>
+    </React.Fragment>
 
   )
 }
