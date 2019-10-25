@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { withFirebase } from "./components/Firebase";
 import { makeStyles } from "@material-ui/core/styles";
 import MaterialTable from "material-table";
-import { XYPlot, AreaSeries } from "react-vis";
+import { FlexibleWidthXYPlot, AreaSeries } from "react-vis";
 import LinearProgress from "@material-ui/core/LinearProgress";
 
 import Container from "@material-ui/core/Container";
@@ -66,7 +66,7 @@ const ReadingVis = ({ readings }) => {
   const classes = useStyles();
   return (
     <React.Fragment>
-      <XYPlot width={300} height={300}>
+      <FlexibleWidthXYPlot height={300}>
         <AreaSeries
           data={[
             {
@@ -337,7 +337,7 @@ const ReadingVis = ({ readings }) => {
           opacity={0.25}
           style={{}}
         />
-      </XYPlot>
+      </FlexibleWidthXYPlot>
     </React.Fragment>
   );
 };
