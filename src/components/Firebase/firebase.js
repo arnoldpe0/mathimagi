@@ -1,4 +1,5 @@
 import app from "firebase/app";
+import 'firebase/firestore';
 
 const config = {
   apiKey: "AIzaSyAivfZg9PSxO_wu0QffM2KWd4JGZqO2vXs",
@@ -15,7 +16,11 @@ class Firebase {
   constructor() {
     if (!app.apps.length) {
       app.initializeApp(config);
+
     }
+    this.db = app.firestore();
   }
+
+  readings = () => this.db.collection('readings');
 }
 export default Firebase;
