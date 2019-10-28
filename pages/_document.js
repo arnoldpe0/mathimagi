@@ -20,7 +20,14 @@ class MyDocument extends Document {
             rel="stylesheet"
             href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
           />
-          <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"></link>
+          <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/icon?family=Material+Icons"
+          ></link>
+          <link
+            rel="stylesheet"
+            href="https://unpkg.com/react-vis/dist/style.css"
+          ></link>
         </Head>
         <body>
           <Main />
