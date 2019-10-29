@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useState, useEffect } from "react";
 import { withFirebase } from "./components/Firebase";
 import { makeStyles } from "@material-ui/core/styles";
 import MaterialTable from "material-table";
@@ -7,11 +7,13 @@ import {
   VerticalGridLines,
   HorizontalGridLines,
   LineMarkSeries,
-  DiscreteColorLegend
+  DiscreteColorLegend,
+  Hint
 } from "react-vis";
 
 import LinearProgress from "@material-ui/core/LinearProgress";
 import formatDistanceToNow from "date-fns/formatDistanceToNow";
+import { curveCatmullRom } from "d3-shape";
 
 import Container from "@material-ui/core/Container";
 import Box from "@material-ui/core/Box";
@@ -24,63 +26,59 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-class Readings extends Component {
-  constructor(props) {
-    super(props);
+const Readings = props => {
+  const classes = useStyles();
 
-    this.state = {
-      loading: false,
-      readings: []
-    };
-  }
+  const [readings, setReadings] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = React.useState(false);
 
-  componentDidMount() {
-    this.setState({ loading: true });
-    this.unsubscribe = this.props.firebase.readings().onSnapshot(snapshot => {
-      let readings = [];
-      snapshot.forEach(doc =>
-        readings.push({
-          ...doc.data(),
-          ts: formatDistanceToNow(doc.data().ts.toDate()).concat(" ago"),
-          ti: doc.data().ts.toDate(),
-          uid: doc.id
-        })
-      );
-      this.setState({
-        readings,
-        loading: false
-      });
-    });
-  }
-
-  componentWillUnmount() {
-    this.props.firebase.readings().off();
-  }
-
-  render() {
-    const { readings, loading } = this.state;
-
-    return (
-      <div>
-        {loading ? (
-          <Container maxWidth="sm">
-            <Box my={4}>
-              <LinearProgress />
-            </Box>
-          </Container>
-        ) : (
-          <React.Fragment>
-            <ReadingVis readings={readings} />
-            <ReadingList readings={readings} />
-          </React.Fragment>
-        )}
-      </div>
+  useEffect(() => {
+    setLoading(true);
+    const unsubscribe = props.firebase.readings().onSnapshot(
+      snapshot => {
+        let readings = [];
+        setLoading(false);
+        snapshot.forEach(doc =>
+          readings.push({
+            ...doc.data(),
+            ts: formatDistanceToNow(doc.data().ts.toDate()).concat(" ago"),
+            ti: doc.data().ts.toDate(),
+            uid: doc.id
+          })
+        );
+        setReadings(readings);
+        setLoading(false);
+      },
+      err => {
+        setError(err);
+      }
     );
-  }
-}
+    return () => unsubscribe();
+  }, []);
+
+  return (
+    <div>
+      {loading ? (
+        <Container maxWidth="sm">
+          <Box my={4}>
+            <LinearProgress />
+          </Box>
+        </Container>
+      ) : (
+        <React.Fragment>
+          <ReadingVis readings={readings} />
+          <ReadingList readings={readings} />
+        </React.Fragment>
+      )}
+    </div>
+  );
+};
 
 const ReadingVis = ({ readings }) => {
   const classes = useStyles();
+
+  const [value, setValue] = useState(null);
 
   const temperature = readings.reduce((total, reading) => {
     total.push({ x: reading.ti, y: reading.temperature });
@@ -102,23 +100,45 @@ const ReadingVis = ({ readings }) => {
     return total;
   }, []);
 
-  const ITEMS = ["Temperature", "Humidity", "Ambient Light", "Pressure"];
+  const forgetValue = () => {
+    setValue({
+      value: null
+    });
+  };
+
+  const rememberValue = value => {
+    setValue({ value });
+  };
 
   return (
     <React.Fragment>
-      <FlexibleWidthXYPlot height={300}>
-        <LineMarkSeries data={temperature} opacity={0.25} />
-        <LineMarkSeries data={humidity} opacity={0.25} />
-        <LineMarkSeries data={ambient_light} opacity={0.25} />
-        <LineMarkSeries data={pressure} opacity={0.25} />
+      <FlexibleWidthXYPlot disableInteractiveElementBlocking height={300}>
+        <LineMarkSeries
+          data={temperature}
+          curve={curveCatmullRom.alpha(0.5)}
+          opacity={0.25}
+          onValueMouseOver={rememberValue}
+          onValueMouseOut={forgetValue}
+        />
+        <LineMarkSeries
+          data={humidity}
+          curve={curveCatmullRom.alpha(0.5)}
+          opacity={0.25}
+        />
+        <LineMarkSeries
+          data={ambient_light}
+          curve={curveCatmullRom.alpha(0.5)}
+          opacity={0.25}
+        />
+        <LineMarkSeries
+          data={pressure}
+          curve={curveCatmullRom.alpha(0.5)}
+          opacity={0.25}
+        />
         <HorizontalGridLines />
         <VerticalGridLines />
+        {value ? <Hint value={value} /> : null}
       </FlexibleWidthXYPlot>
-      <DiscreteColorLegend
-        width={"100%"}
-        orientation="horizontal"
-        items={ITEMS}
-      />
     </React.Fragment>
   );
 };
@@ -141,7 +161,8 @@ const ReadingList = ({ readings }) => {
           ]}
           data={readings}
           options={{
-            exportButton: true
+            exportButton: true,
+            draggable: false
           }}
           title="Sensor Readings"
         />
