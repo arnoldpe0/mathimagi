@@ -39,14 +39,16 @@ const Readings = props => {
       snapshot => {
         let readings = [];
         setLoading(false);
-        snapshot.forEach(doc =>
-          readings.push({
-            ...doc.data(),
-            ts: formatDistanceToNow(doc.data().ts.toDate()).concat(" ago"),
-            ti: doc.data().ts.toDate(),
-            uid: doc.id
-          })
-        );
+        snapshot.forEach(doc => {
+          console.log(readings);
+          doc.data().created &&
+            readings.push({
+              ...doc.data(),
+              id: doc.id,
+              date: formatDistanceToNow(doc.data().created.toDate()),
+              created: doc.data().created.toMillis()
+            });
+        });
         setReadings(readings);
         setLoading(false);
       },
@@ -81,22 +83,22 @@ const ReadingVis = ({ readings }) => {
   const [value, setValue] = useState(null);
 
   const temperature = readings.reduce((total, reading) => {
-    total.push({ x: reading.ti, y: reading.temperature });
+    total.push({ x: reading.created, y: reading.temperature });
     return total;
   }, []);
 
   const humidity = readings.reduce((total, reading) => {
-    total.push({ x: reading.ti, y: reading.humidity });
+    total.push({ x: reading.created, y: reading.humidity });
     return total;
   }, []);
 
   const ambient_light = readings.reduce((total, reading) => {
-    total.push({ x: reading.ti, y: reading.ambient_light });
+    total.push({ x: reading.created, y: reading.ambient_light });
     return total;
   }, []);
 
   const pressure = readings.reduce((total, reading) => {
-    total.push({ x: reading.ti, y: reading.pressure });
+    total.push({ x: reading.created, y: reading.pressure });
     return total;
   }, []);
 
@@ -145,19 +147,19 @@ const ReadingVis = ({ readings }) => {
 
 const ReadingList = ({ readings }) => {
   const classes = useStyles();
-
   return (
     <React.Fragment>
       <div style={{ maxWidth: "100%" }}>
         <MaterialTable
           columns={[
-            { title: "Timestamp", field: "ts" },
+            { title: "Time since", field: "date" },
             { title: "Temp", field: "temperature", type: "numeric" },
             { title: "RH", field: "humidity", type: "numeric" },
             { title: "Pressure", field: "pressure", type: "numeric" },
             { title: "Light", field: "ambient_light", type: "numeric" },
             { title: "Sensor", field: "sensor" },
-            { title: "UID", field: "uid" }
+            { title: "Time Stamp", field: "created" },
+            { title: "ID", field: "id" }
           ]}
           data={readings}
           options={{
