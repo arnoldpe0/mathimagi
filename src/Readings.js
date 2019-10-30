@@ -152,19 +152,20 @@ const ReadingList = ({ readings }) => {
       <div style={{ maxWidth: "100%" }}>
         <MaterialTable
           columns={[
-            { title: "Time since", field: "date" },
             { title: "Temp", field: "temperature", type: "numeric" },
             { title: "RH", field: "humidity", type: "numeric" },
             { title: "Pressure", field: "pressure", type: "numeric" },
             { title: "Light", field: "ambient_light", type: "numeric" },
             { title: "Sensor", field: "sensor" },
-            { title: "Time Stamp", field: "created" },
+            { title: "Time since", field: "date" },
+            { title: "Time Stamp", field: "created", defaultSort: "desc" },
             { title: "ID", field: "id" }
           ]}
           data={readings}
           options={{
             exportButton: true,
-            draggable: false
+            draggable: false,
+            sorting: true
           }}
           title="Sensor Readings"
         />
